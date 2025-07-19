@@ -18,10 +18,10 @@ export default function Navbar() {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-slate-600 hover:text-blue-600 font-medium transition-colors" aria-label="Fitur">
+            <a href="/" className="text-slate-600 hover:text-blue-600 font-medium transition-colors" aria-label="Fitur">
               Fitur
             </a>
-            <a href="#testimonials" className="text-slate-600 hover:text-blue-600 font-medium transition-colors" aria-label="Testimoni">
+            <a href="/" className="text-slate-600 hover:text-blue-600 font-medium transition-colors" aria-label="Testimoni">
               Testimoni
             </a>
             <Link href="/login" className="text-slate-600 hover:text-blue-600 font-medium transition-colors" aria-label="Masuk">

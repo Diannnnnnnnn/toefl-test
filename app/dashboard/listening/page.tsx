@@ -1,5 +1,5 @@
 import React from 'react';
-import AudioPlayer from '../components/Audioplayer/page';
+import AudioPlayer from '../../components/Audioplayer/page';
 
 export default function ListeningPractice() {
   return (
