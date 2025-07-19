@@ -18,7 +18,8 @@ export default function DashboardNavbar({ userId }: { userId: string }) {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white shadow-sm border-b border-slate-200/50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="w-full px-6 py-4 flex items-center justify-between">
+
         <div className="flex space-x-6 flex-1">
           <span className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
             TOEFL ITP Pro
@@ -26,7 +27,7 @@ export default function DashboardNavbar({ userId }: { userId: string }) {
         </div>
         <div className="flex items-center space-x-6">
           <span className="text-sm font-medium text-slate-700 hidden md:inline">
-            Selamat datang, {loading ? 'Memuat...' : userName}
+            Hi!, {loading ? 'Memuat...' : userName}
           </span>
           <Link
             href="/profile"

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { UserProvider } from './UserContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: process.env.NODE_ENV === 'production' ? new URL('https://toefl-itp-pro.com') : new URL('http://localhost:3000'),
   title: 'TOEFL ITP Pro',
   description: 'Platform pembelajaran interaktif untuk persiapan TOEFL ITP dengan latihan Listening, Structure, dan Reading.',
   openGraph: {
@@ -18,7 +20,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <UserProvider>{children}</UserProvider>
+      </body>
     </html>
   );
 }

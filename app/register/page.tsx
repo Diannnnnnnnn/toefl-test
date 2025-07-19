@@ -50,6 +50,7 @@ export default function SignUp() {
       });
 
       const data = await response.json();
+      console.log('API response:', data); // Logging respons API
 
       if (!response.ok) {
         throw new Error(data.message || 'Something went wrong');
@@ -62,6 +63,7 @@ export default function SignUp() {
       setFormData({ fullName: '', email: '', password: '', confirmPassword: '' });
     } catch (err: any) {
       setError(err.message || 'Failed to register. Please try again.');
+      console.error('Signup error:', err); // Logging error klien
     }
   };
 
