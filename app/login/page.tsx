@@ -4,6 +4,7 @@ import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, ArrowRight } from 'lucide-react';
 import Navbar from '../Navbar';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   email: string;
@@ -16,20 +17,46 @@ export default function SignIn() {
     password: ''
   });
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Add sign-in logic here (e.g., API call)
-    console.log('Form submitted:', formData);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('/api/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null); // Handle non-JSON response
+        throw new Error(data?.message || 'Server error');
+      }
+
+      const data = await response.json();
+      setSuccess('Login successful! Redirecting...');
+      console.log('Logged in:', data);
+      // Redirect to dashboard after 1 second to show success message
+      setTimeout(() => router.push('/dashboard'), 1000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to login. Please check your credentials.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
-    <Navbar />
+      <Navbar />
       {/* Main Content */}
       <section className="relative pt-24 pb-20 overflow-hidden">
         {/* Background Elements */}
@@ -84,6 +111,9 @@ export default function SignIn() {
 
                 {error && (
                   <p className="text-red-500 text-sm font-medium">{error}</p>
+                )}
+                {success && (
+                  <p className="text-green-500 text-sm font-medium">{success}</p>
                 )}
 
                 <button

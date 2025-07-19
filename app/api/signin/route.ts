@@ -9,21 +9,20 @@ const dbConfig = {
   database: process.env.DB_DATABASE || 'toefl'
 };
 
-interface SignupRequest {
-  fullName: string;
+interface SigninRequest {
   email: string;
   password: string;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body: SignupRequest = await req.json();
+    const body: SigninRequest = await req.json();
 
-    console.log('Received body:', body); // Debug log
+    console.log('Received signin body:', body); // Debug log
 
-    if (!body.fullName || !body.email || !body.password) {
+    if (!body.email || !body.password) {
       return NextResponse.json(
-        { message: 'Full name, email, and password are required' },
+        { message: 'Email and password are required' },
         { status: 400 }
       );
     }
@@ -36,38 +35,48 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(body.password, saltRounds);
-
     const connection = await mysql.createConnection(dbConfig);
     console.log('Database connection established'); // Debug log
 
     try {
-      await connection.execute(
-        'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)',
-        [body.fullName, body.email, hashedPassword]
-      );
+      const [rows] = await connection.execute(
+        'SELECT * FROM users WHERE email = ?',
+        [body.email]
+      ) as [any[], any];
+
+      if (Array.isArray(rows) && rows.length === 0) {
+        await connection.end();
+        return NextResponse.json(
+          { message: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
+
+      const user = rows[0] as { id: number; password: string };
+      const isMatch = await bcrypt.compare(body.password, user.password);
+
+      if (!isMatch) {
+        await connection.end();
+        return NextResponse.json(
+          { message: 'Invalid email or password' },
+          { status: 401 }
+        );
+      }
 
       await connection.end();
-      console.log('User inserted successfully'); // Debug log
+      console.log('Login successful for user:', user.id); // Debug log
 
       return NextResponse.json(
-        { message: 'User registered successfully' },
-        { status: 201 }
+        { message: 'Login successful', userId: user.id },
+        { status: 200 }
       );
     } catch (dbError: any) {
       await connection.end();
       console.error('Database error:', dbError); // Debug log
-      if (dbError.code === 'ER_DUP_ENTRY') {
-        return NextResponse.json(
-          { message: 'Email already registered' },
-          { status: 409 }
-        );
-      }
       throw dbError;
     }
   } catch (error: any) {
-    console.error('Signup error:', error); // Enhanced error logging
+    console.error('Signin error:', error); // Enhanced error logging
     return NextResponse.json(
       { message: 'Internal server error: ' + (error.message || 'Unknown error') },
       { status: 500 }

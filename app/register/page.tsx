@@ -20,25 +20,49 @@ export default function SignUp() {
     confirmPassword: ''
   });
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    setError('');
-    // Add signup logic here (e.g., API call)
-    console.log('Form submitted:', formData);
+
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      setSuccess('Registration successful! You can now log in.');
+      setFormData({ fullName: '', email: '', password: '', confirmPassword: '' });
+    } catch (err: any) {
+      setError(err.message || 'Failed to register. Please try again.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
-    <Navbar />
+      <Navbar />
       {/* Main Content */}
       <section className="relative pt-24 pb-20 overflow-hidden">
         {/* Background Elements */}
@@ -125,6 +149,9 @@ export default function SignUp() {
 
                 {error && (
                   <p className="text-red-500 text-sm font-medium">{error}</p>
+                )}
+                {success && (
+                  <p className="text-green-500 text-sm font-medium">{success}</p>
                 )}
 
                 <button
