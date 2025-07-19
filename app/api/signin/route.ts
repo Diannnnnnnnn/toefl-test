@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
   let connection;
   try {
     const body: SigninRequest = await req.json();
+    console.log('Signin request:', body);
 
     if (!body.email || !body.password) {
       return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
     if (!emailRegex.test(body.email)) {
       return NextResponse.json({ message: 'Invalid email format' }, { status: 400 });
     }
-
+    
     connection = await pool.getConnection();
     const [rows] = await connection.execute('SELECT * FROM users WHERE email = ?', [body.email]) as [any[], any];
 

@@ -44,11 +44,13 @@ export default function SignIn() {
       }
 
       const data = await response.json();
+      console.log('Signin response:', response.status, data);
       if (!data.token || !data.userId) {
         throw new Error('Invalid response from server: token or userId missing');
       }
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
+      console.log('Stored userId:', data.userId, 'token:', data.token);
       setSuccess('Login successful! Redirecting...');
       router.push('/dashboard');
       router.refresh();

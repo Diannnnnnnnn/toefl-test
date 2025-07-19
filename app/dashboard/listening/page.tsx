@@ -1,6 +1,6 @@
 import React from 'react';
 import AudioPlayer from '../../components/Audioplayer/page';
-
+import { useUser } from '@/app/UserContext';
 export default function ListeningPractice() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
