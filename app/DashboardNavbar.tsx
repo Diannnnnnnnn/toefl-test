@@ -1,40 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
+import { useUser } from './UserContext';
 
 export default function DashboardNavbar({ userId }: { userId: string }) {
-  const [userName, setUserName] = useState<string>('Memuat...');
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userId) {
-        setUserName('User');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/user/${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await response.json();
-        setUserName(data.fullName || 'User');
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setUserName('User');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserData();
-  }, [userId]);
+  const { userName, loading } = useUser();
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
+    localStorage.removeItem('token');
     window.location.href = '/login';
   };
 
@@ -50,7 +26,10 @@ export default function DashboardNavbar({ userId }: { userId: string }) {
           <span className="text-sm font-medium text-slate-700 hidden md:inline">
             Selamat datang, {loading ? 'Memuat...' : userName}
           </span>
-          <Link href="/profile" className="text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors hidden md:inline">
+          <Link
+            href="/profile"
+            className="text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors hidden md:inline"
+          >
             Profil
           </Link>
           <button

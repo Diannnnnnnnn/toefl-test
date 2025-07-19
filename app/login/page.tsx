@@ -12,12 +12,10 @@ interface FormData {
 }
 
 export default function SignIn() {
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +26,7 @@ export default function SignIn() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/signin', {
@@ -35,31 +34,41 @@ export default function SignIn() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null); // Handle non-JSON response
+        const data = await response.json().catch(() => null);
         throw new Error(data?.message || 'Server error');
       }
 
       const data = await response.json();
+      console.log('SignIn response:', data); // Debug
+      if (!data.token || !data.userId) {
+        throw new Error('Invalid response from server: token or userId missing');
+      }
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.userId);
+      console.log('Stored token:', localStorage.getItem('token')); // Debug
+      console.log('Stored userId:', localStorage.getItem('userId')); // Debug
       setSuccess('Login successful! Redirecting...');
-      console.log('Logged in:', data);
-      // Redirect to dashboard after 1 second to show success message
-      setTimeout(() => router.push('/dashboard'), 1000);
+      // Redirect ke dashboard dan refresh setelah 1ms
+      router.push('/dashboard');
+      setTimeout(() => {
+        router.refresh(); // Refresh state klien untuk memastikan dashboard dimuat
+      }, 0,1);
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      {/* Main Content */}
       <section className="relative pt-24 pb-20 overflow-hidden">
-        {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50 via-white to-cyan-50"></div>
           <div className="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl"></div>
@@ -109,19 +118,16 @@ export default function SignIn() {
                   />
                 </div>
 
-                {error && (
-                  <p className="text-red-500 text-sm font-medium">{error}</p>
-                )}
-                {success && (
-                  <p className="text-green-500 text-sm font-medium">{success}</p>
-                )}
+                {error && <p className="text-red-500 text-sm font-medium" role="alert">{error}</p>}
+                {success && <p className="text-green-500 text-sm font-medium" role="status">{success}</p>}
 
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center"
+                  disabled={isLoading}
+                  className={`w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  Masuk Sekarang
-                  <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                  {isLoading ? 'Loading...' : 'Masuk Sekarang'}
+                  {!isLoading && <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />}
                 </button>
               </form>
 
@@ -133,7 +139,6 @@ export default function SignIn() {
               </p>
             </div>
 
-            {/* Benefits Preview */}
             <div className="grid grid-cols-2 gap-4 mt-8 text-sm">
               <div className="flex items-center text-slate-600">
                 <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />

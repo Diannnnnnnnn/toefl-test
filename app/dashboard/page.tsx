@@ -1,56 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import DashboardNavbar from '../DashboardNavbar';
 import DashboardSidebar from '../DashboardSidebar';
+import { useUser } from '../UserContext';
 
 export default function Dashboard() {
-  const [userName, setUserName] = useState<string>('User');
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const id = localStorage.getItem('userId');
-        if (!id) {
-          console.warn('User ID not found in localStorage');
-          setUserName('User');
-          setUserId(null);
-          setLoading(false);
-          return;
-        }
-
-        setUserId(id);
-
-        const response = await fetch(`/api/user/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await response.json();
-        setUserName(data.fullName || 'User');
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setUserName('User');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserData();
-  }, []);
+  const { userName, userId, loading } = useUser();
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-600">Memuat...</p>
+        <p className="text-slate-600 text-lg font-medium">Memuat...</p>
       </div>
     );
   }
 
+  if (!userId) {
+    return null; // UserProvider will handle redirect to /login
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <DashboardNavbar userId={userId || ''} />
+      <DashboardNavbar userId={userId} />
       <DashboardSidebar />
       <div className="ml-64 pt-26 p-6">
         <div className="text-center mb-10">
