@@ -46,7 +46,6 @@ export async function POST(req: NextRequest) {
     }
 
     const token = jwt.sign({ userId: user.id.toString() }, JWT_SECRET, { expiresIn: '1h' });
-    console.log('Generated token:', token); // Debug
 
     return NextResponse.json({ message: 'Login successful', userId: user.id.toString(), token }, { status: 200 });
   } catch (error: any) {

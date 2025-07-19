@@ -22,11 +22,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const id = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
 
-      console.log('UserContext - userId:', id); // Debug
-      console.log('UserContext - token:', token); // Debug
-
       if (!id || !token) {
-        console.warn('User ID or token not found in localStorage');
         setUserName('User');
         setUserId(null);
         setLoading(false);
@@ -43,15 +39,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           },
         });
 
-        console.log('UserContext - API response status:', response.status); // Debug
-
-        // Read the response body only once
         const data = await response.json();
-        console.log('UserContext - API response data:', data); // Debug
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.warn('Unauthorized: Invalid token');
             localStorage.removeItem('token');
             localStorage.removeItem('userId');
             router.push('/login');
@@ -61,11 +52,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
 
         setUserName(data.fullName || 'User');
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching user data:', error);
         localStorage.removeItem('token');
         localStorage.removeItem('userId');
-        setUserName('User');
         router.push('/login');
       } finally {
         setLoading(false);
@@ -74,8 +64,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     fetchUserData();
   }, [router]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <p className="text-slate-600 text-lg font-medium">Memuat...</p>
+      </div>
+    );
+  }
+
   return (
-    <UserContext.Provider value={{ userName, userId, loading }}>
+    <UserContext.Provider value={{ userName, userId, loading: false }}>
       {children}
     </UserContext.Provider>
   );

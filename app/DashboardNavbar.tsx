@@ -4,14 +4,16 @@ import React from 'react';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { useUser } from './UserContext';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardNavbar({ userId }: { userId: string }) {
   const { userName, loading } = useUser();
+  const router = useRouter();
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    router.push('/login');
   };
 
   return (

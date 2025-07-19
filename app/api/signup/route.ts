@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 
-const dbConfig = {
+const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_DATABASE || 'toefl'
-};
+});
 
 interface SignupRequest {
   fullName: string;
@@ -18,8 +18,6 @@ interface SignupRequest {
 export async function POST(req: NextRequest) {
   try {
     const body: SignupRequest = await req.json();
-
-    console.log('Received body:', body); // Debug log
 
     if (!body.fullName || !body.email || !body.password) {
       return NextResponse.json(
@@ -39,9 +37,7 @@ export async function POST(req: NextRequest) {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(body.password, saltRounds);
 
-    const connection = await mysql.createConnection(dbConfig);
-    console.log('Database connection established'); // Debug log
-
+    const connection = await pool.getConnection();
     try {
       await connection.execute(
         'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)',
@@ -49,15 +45,12 @@ export async function POST(req: NextRequest) {
       );
 
       await connection.end();
-      console.log('User inserted successfully'); // Debug log
-
       return NextResponse.json(
         { message: 'User registered successfully' },
         { status: 201 }
       );
     } catch (dbError: any) {
       await connection.end();
-      console.error('Database error:', dbError); // Debug log
       if (dbError.code === 'ER_DUP_ENTRY') {
         return NextResponse.json(
           { message: 'Email already registered' },
@@ -67,7 +60,7 @@ export async function POST(req: NextRequest) {
       throw dbError;
     }
   } catch (error: any) {
-    console.error('Signup error:', error); // Enhanced error logging
+    console.error('Signup error:', error);
     return NextResponse.json(
       { message: 'Internal server error: ' + (error.message || 'Unknown error') },
       { status: 500 }

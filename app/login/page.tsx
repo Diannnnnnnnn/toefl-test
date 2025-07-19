@@ -44,20 +44,14 @@ export default function SignIn() {
       }
 
       const data = await response.json();
-      console.log('SignIn response:', data); // Debug
       if (!data.token || !data.userId) {
         throw new Error('Invalid response from server: token or userId missing');
       }
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.userId);
-      console.log('Stored token:', localStorage.getItem('token')); // Debug
-      console.log('Stored userId:', localStorage.getItem('userId')); // Debug
       setSuccess('Login successful! Redirecting...');
-      // Redirect ke dashboard dan refresh setelah 1ms
       router.push('/dashboard');
-      setTimeout(() => {
-        router.refresh(); // Refresh state klien untuk memastikan dashboard dimuat
-      }, 0,1);
+      router.refresh();
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please check your credentials.');
     } finally {

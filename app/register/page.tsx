@@ -4,6 +4,7 @@ import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { BookOpen, CheckCircle, ArrowRight } from 'lucide-react';
 import Navbar from '../Navbar';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   fullName: string;
@@ -21,6 +22,7 @@ export default function SignUp() {
   });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,7 +55,10 @@ export default function SignUp() {
         throw new Error(data.message || 'Something went wrong');
       }
 
-      setSuccess('Registration successful! You can now log in.');
+      setSuccess('Registration successful! Redirecting to login...');
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
       setFormData({ fullName: '', email: '', password: '', confirmPassword: '' });
     } catch (err: any) {
       setError(err.message || 'Failed to register. Please try again.');
@@ -63,9 +68,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      {/* Main Content */}
       <section className="relative pt-24 pb-20 overflow-hidden">
-        {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50 via-white to-cyan-50"></div>
           <div className="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl"></div>
@@ -171,7 +174,6 @@ export default function SignUp() {
               </p>
             </div>
 
-            {/* Benefits Preview */}
             <div className="grid grid-cols-2 gap-4 mt-8 text-sm">
               <div className="flex items-center text-slate-600">
                 <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />

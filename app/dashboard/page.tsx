@@ -4,9 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import DashboardNavbar from '../DashboardNavbar';
 import DashboardSidebar from '../DashboardSidebar';
-import { useUser } from '../UserContext';
+import { UserProvider, useUser } from '../UserContext';
 
-export default function Dashboard() {
+export default function DashboardPage() {
+  return (
+    <UserProvider>
+      <Dashboard />
+    </UserProvider>
+  );
+}
+
+function Dashboard() {
   const { userName, userId, loading } = useUser();
 
   if (loading) {
@@ -18,7 +26,11 @@ export default function Dashboard() {
   }
 
   if (!userId) {
-    return null; // UserProvider will handle redirect to /login
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <p className="text-red-500 text-lg font-medium">Sesi telah berakhir. Silakan masuk kembali.</p>
+      </div>
+    );
   }
 
   return (
