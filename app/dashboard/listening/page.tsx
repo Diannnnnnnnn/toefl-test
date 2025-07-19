@@ -7,7 +7,6 @@ export default function ListeningPractice() {
       <h1 className="text-3xl font-bold mb-6 text-center">Latihan Listening TOEFL ITP</h1>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Percakapan Pendek</h2>
-        <AudioPlayer src="/sample-audio.mp3" />
         <div className="mt-4">
           <p className="mb-2">Pertanyaan: Apa topik utama percakapan?</p>
           <ul className="list-disc pl-5">
