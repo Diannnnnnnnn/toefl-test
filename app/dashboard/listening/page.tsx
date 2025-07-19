@@ -1,5 +1,4 @@
 import React from 'react';
-import AudioPlayer from '../../components/Audioplayer/page';
 import { useUser } from '@/app/UserContext';
 export default function ListeningPractice() {
   return (
