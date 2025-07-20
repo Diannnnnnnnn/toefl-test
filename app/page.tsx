@@ -93,7 +93,7 @@ export default function ModernToeflHomepage() {
           <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="inline-flex items-center px-4 py-2 bg-blue-100/80 border border-blue-200/50 rounded-full text-blue-700 text-sm font-medium mb-8 backdrop-blur-sm">
               <Star className="w-4 h-4 mr-2 fill-current" />
-              Platform TOEFL ITP Terpercaya #1 di Indonesia
+              Platform Buat Belajar TOEFL ITP Gratis
             </div>
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-8 leading-tight">
@@ -114,7 +114,7 @@ export default function ModernToeflHomepage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link
-                href="/listening"
+                href="/login"
                 className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center"
               >
                 <Play className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
@@ -404,8 +404,8 @@ export default function ModernToeflHomepage() {
           <div className="border-t border-slate-800 mt-12 pt-8 text-center">
             <p className="text-slate-400">
               © 2025 TOEFL ITP Pro. All rights reserved. | 
-              <a href="mailto:support@toeflitp.com" className="text-blue-400 hover:text-blue-300 ml-1">
-                support@toeflitp.com
+              <a href="mailto:dianmanurung132@gmail" className="text-blue-400 hover:text-blue-300 ml-1">
+                dian132@gmail
               </a>
             </p>
           </div>
